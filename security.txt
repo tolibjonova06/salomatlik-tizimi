@@ -1,0 +1,388 @@
+/* security.js — Shaxsiy salomatlik tizimi uchun xavfsizlik moduli
+   index.html dagi asosiy </script> dan KEYIN ulanadi:
+   <script src="security.js"></script>
+   Imkoniyatlar: parol bilan kirish (PBKDF2), AES-256-GCM shifrlash,
+   urinishlarni cheklash, avtomatik qulflash, shifrlangan eksport/import,
+   import qilinadigan ma'lumotni tekshirish (XSS himoyasi), "Xavfsizlik" bo'limi. */
+(function () {
+  "use strict";
+
+  var K_META = "shf_sec", K_DATA = "shf_enc", K_OLD = "shf", K_TRY = "shf_try";
+  var ITER = 250000, IDLE = 5 * 60 * 1000, MAXTRY = 5;
+  var DEF = { h: [], w: [], l: [], g: { steps: 8000, sleep: 8, water: 2, workouts: 3, leisure: 3 } };
+  var ok = !!(window.crypto && window.crypto.subtle);
+  var te = new TextEncoder(), tdc = new TextDecoder();
+  var key = null, idleT = null, queue = Promise.resolve(), ov = null, bound = false;
+
+  /* ---------- yordamchi funksiyalar ---------- */
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function today() { return window.td ? window.td() : new Date().toISOString().slice(0, 10); }
+  function b64(buf) {
+    var a = new Uint8Array(buf), s = "", i;
+    for (i = 0; i < a.length; i += 8192) s += String.fromCharCode.apply(null, a.subarray(i, i + 8192));
+    return btoa(s);
+  }
+  function ub64(s) {
+    var b = atob(s), a = new Uint8Array(b.length), i;
+    for (i = 0; i < b.length; i++) a[i] = b.charCodeAt(i);
+    return a;
+  }
+
+  /* ---------- kriptografiya ---------- */
+  function derive(pw, salt, iter) {
+    return crypto.subtle.importKey("raw", te.encode(pw), "PBKDF2", false, ["deriveKey"]).then(function (m) {
+      return crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: salt, iterations: iter, hash: "SHA-256" },
+        m, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    });
+  }
+  function seal(k, text) {
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, te.encode(text)).then(function (ct) {
+      var o = new Uint8Array(12 + ct.byteLength);
+      o.set(iv, 0); o.set(new Uint8Array(ct), 12);
+      return b64(o);
+    });
+  }
+  function unseal(k, str) {
+    var a = ub64(str);
+    return crypto.subtle.decrypt({ name: "AES-GCM", iv: a.subarray(0, 12) }, k, a.subarray(12)).then(function (p) { return tdc.decode(p); });
+  }
+
+  /* ---------- ma'lumotni tekshirish (import / yuklash) ---------- */
+  function sanitize(o) {
+    var out = {}, re = /^\d{4}-\d{2}-\d{2}$/, bad = { __proto__: 1, constructor: 1, prototype: 1 };
+    if (!o || typeof o !== "object") return out;
+    ["h", "w", "l"].forEach(function (k) {
+      if (!Array.isArray(o[k])) return;
+      out[k] = o[k].slice(0, 5000).filter(function (x) { return x && typeof x === "object" && !Array.isArray(x); }).map(function (x) {
+        var y = {};
+        Object.keys(x).slice(0, 20).forEach(function (n) {
+          if (bad[n]) return;
+          var v = x[n];
+          if (typeof v === "string") y[n] = v.slice(0, 200);
+          else if (typeof v === "number" && isFinite(v)) y[n] = v;
+        });
+        y.id = Math.floor(+x.id) || (Date.now() + Math.floor(Math.random() * 1e6)); /* id faqat son: onclick ichida ishlatiladi */
+        y.date = (typeof y.date === "string" && re.test(y.date)) ? y.date : today();
+        return y;
+      });
+    });
+    if (o.g && typeof o.g === "object") {
+      out.g = {};
+      ["steps", "sleep", "water", "workouts", "leisure"].forEach(function (n) {
+        var v = +o.g[n];
+        if (isFinite(v) && v >= 0 && v <= 100000) out.g[n] = v;
+      });
+    }
+    return out;
+  }
+  function applyData(obj) {
+    var s = sanitize(obj), d = clone(DEF);
+    ["h", "w", "l"].forEach(function (k) { if (s[k]) d[k] = s[k]; });
+    if (s.g) Object.assign(d.g, s.g);
+    window.D = d;
+  }
+  function mergeData(obj) {
+    var s = sanitize(obj), d = window.D;
+    ["h", "w", "l"].forEach(function (k) { if (s[k]) d[k] = s[k]; });
+    if (s.g) Object.assign(d.g, s.g);
+    save();
+    window.R();
+  }
+
+  /* ---------- saqlash ---------- */
+  function save() {
+    if (!ok) { lsSet(K_OLD, JSON.stringify(window.D)); return; }
+    if (!key) return;
+    var k = key, snap = JSON.stringify(window.D);
+    queue = queue.then(function () { return seal(k, snap); }).then(function (s) { lsSet(K_DATA, s); }).catch(function () {});
+  }
+
+  /* ---------- urinishlarni cheklash ---------- */
+  function tries() {
+    try { var t = JSON.parse(lsGet(K_TRY)); if (t && typeof t.n === "number") return t; } catch (e) {}
+    return { n: 0, until: 0 };
+  }
+  function resetTries() { lsDel(K_TRY); }
+  function waitMsg(t) { return Math.ceil((t.until - Date.now()) / 1000); }
+  function fail() {
+    var t = tries();
+    t.n++;
+    if (t.n >= MAXTRY) t.until = Date.now() + Math.min(600000, 15000 * Math.pow(2, t.n - MAXTRY));
+    lsSet(K_TRY, JSON.stringify(t));
+    return t.until > Date.now()
+      ? "Parol notoʻgʻri. Urinishlar " + waitMsg(t) + " soniyaga bloklandi."
+      : "Parol notoʻgʻri. Qolgan urinishlar: " + (MAXTRY - t.n) + ".";
+  }
+
+  /* ---------- oyna (modal) ---------- */
+  function closeModal() { if (ov && ov.parentNode) ov.parentNode.removeChild(ov); ov = null; }
+  function setInert(on) {
+    ["header", "nav", "main"].forEach(function (t) {
+      var e = document.querySelector(t);
+      if (e) { if (on) e.setAttribute("inert", ""); else e.removeAttribute("inert"); }
+    });
+  }
+  /* fn(values) -> Promise<xato matni | null>. Xato bo'lsa oyna ochiq qoladi. */
+  function ask(o, fn) {
+    return new Promise(function (res) {
+      closeModal();
+      var box = document.createElement("div");
+      box.className = "sec-ov" + (o.cancel ? " m" : "");
+      var h = '<div class="sec-box" role="dialog" aria-modal="true" aria-labelledby="sec-t"><h2 id="sec-t">' + esc(o.title) + "</h2>" +
+        (o.desc ? '<p class="sec-d">' + esc(o.desc) + "</p>" : "") + '<form autocomplete="off">';
+      (o.fields || []).forEach(function (f) {
+        h += "<label>" + esc(f.label) + '</label><input type="password" autocomplete="' + (f.ac || "off") + '"' + (f.opt ? "" : " required") + ">";
+      });
+      h += '<div class="sec-m" role="alert"></div><div class="sec-b"><button class="p" type="submit">' + esc(o.ok || "OK") + "</button>";
+      if (o.cancel) h += '<button type="button" class="sec-c">Bekor qilish</button>';
+      if (o.extraBtn) h += '<button type="button" class="sec-x">' + esc(o.extraBtn.text) + "</button>";
+      h += "</div></form></div>";
+      box.innerHTML = h;
+      document.body.appendChild(box);
+      ov = box;
+      var form = box.querySelector("form"), ins = box.querySelectorAll("input"), msg = box.querySelector(".sec-m"), btn = box.querySelector(".p");
+      form.onsubmit = function (e) {
+        e.preventDefault();
+        var v = [].map.call(ins, function (i) { return i.value; });
+        btn.disabled = true; msg.textContent = "Tekshirilmoqda…";
+        Promise.resolve().then(function () { return fn(v); }).then(function (err) {
+          if (err) { msg.textContent = err; btn.disabled = false; if (ins[0]) ins[0].select(); }
+          else { closeModal(); res(true); }
+        }, function () { msg.textContent = "Xatolik yuz berdi."; btn.disabled = false; });
+      };
+      var c = box.querySelector(".sec-c");
+      if (c) { c.onclick = function () { closeModal(); res(false); }; box.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeModal(); res(false); } }); }
+      var x = box.querySelector(".sec-x");
+      if (x) x.onclick = o.extraBtn.fn;
+      if (ins[0]) ins[0].focus();
+    });
+  }
+
+  /* ---------- parol o'rnatish / kirish ---------- */
+  function createVault(pw) {
+    var salt = crypto.getRandomValues(new Uint8Array(16));
+    return derive(pw, salt, ITER).then(function (k) {
+      return seal(k, "shf-ok").then(function (c) {
+        lsSet(K_META, JSON.stringify({ s: b64(salt), i: ITER, c: c }));
+        var old = lsGet(K_OLD), parsed = {};
+        try { if (old) parsed = JSON.parse(old); } catch (e) {}
+        applyData(parsed); /* eski shifrlanmagan ma'lumot bo'lsa, ko'chiriladi */
+        key = k;
+        return seal(k, JSON.stringify(window.D));
+      }).then(function (s) { lsSet(K_DATA, s); lsDel(K_OLD); return null; });
+    });
+  }
+  function setupFlow() {
+    setInert(true);
+    ask({
+      title: "🔐 Parol oʻrnating",
+      desc: "Salomatlik ma’lumotlaringiz shu parol bilan shifrlanadi. Parolni unutsangiz, ma’lumotlarni tiklab boʻlmaydi.",
+      fields: [{ label: "Yangi parol (kamida 8 belgi)", ac: "new-password" }, { label: "Parolni takrorlang", ac: "new-password" }],
+      ok: "Oʻrnatish"
+    }, function (v) {
+      if (v[0].length < 8) return Promise.resolve("Parol kamida 8 belgidan iborat boʻlsin.");
+      if (v[0] !== v[1]) return Promise.resolve("Parollar mos kelmadi.");
+      return createVault(v[0]);
+    }).then(function (r) { if (r) afterUnlock(); });
+  }
+  function unlockFlow() {
+    setInert(true);
+    var meta;
+    try { meta = JSON.parse(lsGet(K_META)); } catch (e) { meta = null; }
+    if (!meta || !meta.s || !meta.c) { wipe(true); return; }
+    var iter = (+meta.i >= 1000 && +meta.i <= 2000000) ? +meta.i : ITER;
+    ask({
+      title: "🔒 Tizim qulflangan",
+      desc: "Davom etish uchun parolingizni kiriting.",
+      fields: [{ label: "Parol", ac: "current-password" }],
+      ok: "Ochish",
+      extraBtn: { text: "Parolni unutdim", fn: function () { wipe(false); } }
+    }, function (v) {
+      var t = tries();
+      if (t.until > Date.now()) return Promise.resolve("Juda koʻp xato urinish. " + waitMsg(t) + " soniyadan keyin urinib koʻring.");
+      return derive(v[0], ub64(meta.s), iter).then(function (k) {
+        return unseal(k, meta.c).then(function (x) {
+          if (x !== "shf-ok") throw 1;
+          key = k; resetTries();
+          var d = lsGet(K_DATA);
+          return d ? unseal(k, d) : "{}";
+        }).then(function (j) { applyData(JSON.parse(j)); return null; }, function () { key = null; return fail(); });
+      });
+    }).then(function (r) { if (r) afterUnlock(); });
+  }
+  function afterUnlock() {
+    setInert(false);
+    bindIdle();
+    arm();
+    window.nav();
+    window.R();
+  }
+
+  /* ---------- qulflash ---------- */
+  function lock() {
+    if (!ok || !key) return;
+    key = null;
+    clearTimeout(idleT);
+    window.D = clone(DEF);
+    var v = document.getElementById("v"), n = document.getElementById("nav");
+    if (v) v.innerHTML = "";
+    if (n) n.innerHTML = "";
+    unlockFlow();
+  }
+  function arm() { clearTimeout(idleT); if (ok && key) idleT = setTimeout(lock, IDLE); }
+  function bindIdle() {
+    if (bound) return; bound = true;
+    ["click", "keydown", "touchstart", "mousemove", "scroll"].forEach(function (ev) { window.addEventListener(ev, arm, { passive: true }); });
+  }
+
+  /* ---------- parolni almashtirish ---------- */
+  function rekey(pw) {
+    return queue.then(function () {
+      var salt = crypto.getRandomValues(new Uint8Array(16));
+      return derive(pw, salt, ITER).then(function (k) {
+        return seal(k, "shf-ok").then(function (c) {
+          return seal(k, JSON.stringify(window.D)).then(function (s) {
+            lsSet(K_META, JSON.stringify({ s: b64(salt), i: ITER, c: c }));
+            lsSet(K_DATA, s);
+            key = k;
+            return null;
+          });
+        });
+      });
+    });
+  }
+  function changePw() {
+    if (!ok || !key) return;
+    ask({
+      title: "Parolni almashtirish",
+      fields: [{ label: "Joriy parol", ac: "current-password" }, { label: "Yangi parol (kamida 8 belgi)", ac: "new-password" }, { label: "Yangi parolni takrorlang", ac: "new-password" }],
+      ok: "Almashtirish", cancel: true
+    }, function (v) {
+      if (v[1].length < 8) return Promise.resolve("Yangi parol kamida 8 belgidan iborat boʻlsin.");
+      if (v[1] !== v[2]) return Promise.resolve("Yangi parollar mos kelmadi.");
+      var meta = JSON.parse(lsGet(K_META));
+      return derive(v[0], ub64(meta.s), meta.i).then(function (k) { return unseal(k, meta.c); })
+        .then(function (x) { if (x !== "shf-ok") throw 1; return true; })
+        .then(function () { return rekey(v[1]); }, function () { return "Joriy parol notoʻgʻri."; });
+    }).then(function (r) { if (r) window.R(); });
+  }
+
+  /* ---------- hammasini o'chirish ---------- */
+  function wipe(silent) {
+    if (!silent && !confirm("Barcha ma’lumotlar va parol butunlay oʻchiriladi. Qaytarib boʻlmaydi. Davom etasizmi?")) return;
+    [K_META, K_DATA, K_OLD, K_TRY].forEach(lsDel);
+    location.reload();
+  }
+
+  /* ---------- eksport / import ---------- */
+  function download(text) {
+    var a = document.createElement("a"), u = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    a.href = u; a.download = "salomatlik-" + today() + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 1000);
+  }
+  function exportData() {
+    if (ok && !key) return;
+    if (!ok) { download(JSON.stringify(window.D)); return; }
+    ask({
+      title: "Eksport",
+      desc: "Fayl parol bilan shifrlanadi. Maydonni boʻsh qoldirsangiz, fayl shifrlanmaydi va uni hamma oʻqiy oladi.",
+      fields: [{ label: "Eksport paroli (ixtiyoriy)", ac: "new-password", opt: true }],
+      ok: "Yuklab olish", cancel: true
+    }, function (v) {
+      var plain = JSON.stringify(window.D);
+      if (!v[0]) { download(plain); return Promise.resolve(null); }
+      if (v[0].length < 8) return Promise.resolve("Parol kamida 8 belgidan iborat boʻlsin.");
+      var salt = crypto.getRandomValues(new Uint8Array(16));
+      return derive(v[0], salt, ITER).then(function (k) { return seal(k, plain); }).then(function (c) {
+        download(JSON.stringify({ v: 1, enc: true, s: b64(salt), i: ITER, d: c }));
+        return null;
+      });
+    });
+  }
+  function importData(input) {
+    var f = input.files && input.files[0];
+    input.value = "";
+    if (!f || (ok && !key)) return;
+    if (f.size > 5 * 1024 * 1024) { alert("Fayl juda katta (5 MB dan oshmasin)."); return; }
+    var r = new FileReader();
+    r.onload = function () {
+      var j;
+      try { j = JSON.parse(r.result); } catch (e) { alert("Fayl notoʻgʻri"); return; }
+      if (j && j.enc === true && ok && typeof j.s === "string" && typeof j.d === "string") {
+        var it = (+j.i >= 1000 && +j.i <= 2000000) ? +j.i : ITER;
+        ask({ title: "Shifrlangan fayl", desc: "Eksport paytida kiritilgan parolni kiriting.", fields: [{ label: "Fayl paroli", ac: "off" }], ok: "Import qilish", cancel: true }, function (v) {
+          return derive(v[0], ub64(j.s), it).then(function (k) { return unseal(k, j.d); })
+            .then(function (t) { mergeData(JSON.parse(t)); return null; }, function () { return "Parol notoʻgʻri yoki fayl buzilgan."; });
+        });
+      } else if (j && j.enc === true) {
+        alert("Shifrlangan faylni ochish uchun HTTPS (yoki localhost) kerak.");
+      } else mergeData(j);
+    };
+    r.readAsText(f);
+  }
+
+  /* ---------- "Xavfsizlik" bo'limi ---------- */
+  function secHTML() {
+    var st = ok
+      ? '<div class="tip">✅ Himoya faol: ma’lumotlar AES-256-GCM bilan shifrlangan.</div>'
+      : '<div class="tip" style="background:#fdecea;color:#7a1f23">⚠️ Shifrlash ishlamayapti: brauzer Web Crypto API ni faqat HTTPS (yoki localhost) sahifalarda beradi. Ma’lumotlar shifrlanmay saqlanmoqda.</div>';
+    var dis = ok ? "" : " disabled";
+    return '<div class="card"><b>🛡️ Xavfsizlik</b>' + st +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="p"' + dis + ' onclick="SEC.lock()">Hozir qulflash</button><button' + dis + ' onclick="SEC.changePw()">Parolni almashtirish</button><button class="x" style="border:1px solid var(--wa)" onclick="SEC.wipe()">Barcha ma’lumotni oʻchirish</button></div></div>' +
+      '<div class="card"><b>Qanday himoya qilingan?</b>' +
+      '<div class="tip"><b>Parol va kalit.</b> Parol saqlanmaydi. Undan PBKDF2-SHA256 (' + ITER.toLocaleString("en-US") + ' iteratsiya) va tasodifiy tuz (salt) bilan 256-bitli kalit hosil qilinadi.</div>' +
+      '<div class="tip"><b>Shifrlash.</b> Ma’lumotlar AES-256-GCM bilan shifrlanadi. GCM butunlikni ham tekshiradi: fayl oʻzgartirilsa, ochilmaydi.</div>' +
+      '<div class="tip"><b>Brute-force himoyasi.</b> ' + MAXTRY + ' marta xato kiritilsa, kirish bloklanadi va har keyingi xatoda blok uzayadi.</div>' +
+      '<div class="tip"><b>Avtomatik qulflash.</b> ' + (IDLE / 60000) + ' daqiqa harakatsiz qolsa, tizim qulflanadi va ma’lumotlar sahifa xotirasidan oʻchiriladi.</div>' +
+      '<div class="tip"><b>Eksport.</b> Fayl parol bilan shifrlanishi mumkin. Import paytida fayl tekshiriladi (turlar, sana, uzunlik), shuning uchun zararli fayl orqali kod kiritib boʻlmaydi (XSS).</div>' +
+      '<div class="tip"><b>Maxfiylik.</b> Ma’lumotlar faqat shu brauzerda saqlanadi, hech qaysi serverga yuborilmaydi.</div>' +
+      '<p class="mu">Eslatma: parolni unutsangiz, ma’lumotlarni tiklab boʻlmaydi. Urinishlarni cheklash brauzer ichida ishlaydi, haqiqiy himoya esa kuchli parol va shifrlashdan keladi.</p></div>';
+  }
+
+  /* ---------- uslub ---------- */
+  function addCss() {
+    var s = document.createElement("style");
+    s.textContent =
+      ".sec-ov{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}" +
+      ".sec-ov.m{background:rgba(0,0,0,.5)}" +
+      ".sec-box{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:14px;padding:20px;width:100%;max-width:380px}" +
+      ".sec-box h2{margin:0 0 6px;font-size:18px}.sec-box form{display:block}.sec-box label{margin-top:10px}" +
+      ".sec-d{color:var(--mu);font-size:13px;margin:0 0 6px}.sec-m{color:var(--wa);font-size:13px;min-height:20px;margin-top:8px}" +
+      ".sec-b{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.sec-b button:disabled,#v button:disabled{opacity:.5;cursor:not-allowed}";
+    document.head.appendChild(s);
+  }
+
+  /* ---------- ishga tushirish ---------- */
+  window.SEC = { lock: lock, changePw: changePw, wipe: wipe };
+  window.sv = save;
+  window.ex = exportData;
+  window.imp = importData;
+
+  if (window.T && !window.T.some(function (t) { return t[0] === "s"; })) window.T.push(["s", "Xavfsizlik"]);
+  var R0 = window.R;
+  window.R = function () {
+    if (ok && !key) return;
+    if (window.tab === "s") { document.getElementById("v").innerHTML = secHTML(); return; }
+    return R0.apply(this, arguments);
+  };
+
+  addCss();
+  window.D = clone(DEF); /* asosiy skript yuklagan ochiq ma'lumotni xotiradan tozalaymiz */
+  var v0 = document.getElementById("v");
+  if (v0) v0.innerHTML = "";
+
+  if (!ok) {
+    var old = lsGet(K_OLD);
+    try { if (old) applyData(JSON.parse(old)); } catch (e) {}
+    window.nav();
+    window.R();
+  } else if (lsGet(K_META)) unlockFlow();
+  else setupFlow();
+})();

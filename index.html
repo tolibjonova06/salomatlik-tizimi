@@ -3,44 +3,93 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f9d6e">
 <title>Shaxsiy salomatlik, fitnes va boʻsh vaqt tizimi</title>
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--tx:#1b2330;--mu:#667085;--ac:#0f9d6e;--ac2:#e8f6f0;--bd:#e2e6ec;--wa:#e5484d;
+:root{--bg:#f0f7f3;--card:#fff;--tx:#10231c;--mu:#5d7168;--ac:#0f9d6e;--ac2:#e4f5ed;--bd:#dbe8e1;--wa:#e5484d;--glow:#c6eedb;
+--g:linear-gradient(135deg,#17b97f 0%,#0b7a57 55%,#0a4d3a 100%);--sh:0 1px 2px rgba(10,77,58,.06),0 10px 28px -14px rgba(10,77,58,.28);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151c;--card:#1a212b;--tx:#e8ecf2;--mu:#98a2b3;--ac:#2fc392;--ac2:#18332b;--bd:#2a3340}}
-:root[data-theme="dark"]{--bg:#10151c;--card:#1a212b;--tx:#e8ecf2;--mu:#98a2b3;--ac:#2fc392;--ac2:#18332b;--bd:#2a3340}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1411;--card:#13211b;--tx:#e6f2ed;--mu:#93a89f;--ac:#34d399;--ac2:#173a2e;--bd:#25382f;--glow:#123c2d;--sh:0 1px 2px rgba(0,0,0,.3),0 10px 28px -14px rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--bg:#0b1411;--card:#13211b;--tx:#e6f2ed;--mu:#93a89f;--ac:#34d399;--ac2:#173a2e;--bd:#25382f;--glow:#123c2d;--sh:0 1px 2px rgba(0,0,0,.3),0 10px 28px -14px rgba(0,0,0,.6)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header{padding:16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;max-width:900px;margin:auto}
-h1{font-size:18px;margin:0}
-nav{display:flex;gap:6px;overflow-x:auto;padding:0 16px 8px;max-width:900px;margin:auto}
-nav button{white-space:nowrap}
-main{max-width:900px;margin:auto;padding:8px 16px 40px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.stat{background:var(--ac2);border-radius:12px;padding:12px}.stat b{font-size:22px;display:block}.stat span{color:var(--mu);font-size:12px}
+body{margin:0;color:var(--tx);background:radial-gradient(1000px 320px at 50% -120px,var(--glow),transparent 70%) no-repeat,var(--bg);font:15px/1.55 "Inter","Segoe UI Variable","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+header{max-width:900px;margin:auto;padding:18px 16px 10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:44px;height:44px;flex:none;border-radius:14px;background:var(--g);display:grid;place-items:center;font-size:22px;box-shadow:var(--sh)}
+h1{font-size:19px;line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+.brand small{display:block;color:var(--mu);font-size:12px;margin-top:2px}
+.tools{display:flex;gap:8px;flex:none}
+.ib{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;font-size:13px;font-weight:600}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;max-width:900px;margin:auto;display:flex;gap:8px;overflow-x:auto;padding:8px 16px 12px;scrollbar-width:none;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+nav::-webkit-scrollbar{display:none}
+nav button{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;box-shadow:var(--sh)}
+nav button .ic{font-size:16px;line-height:1}
+nav button.on{background:var(--g);color:#fff;border-color:transparent}
+main{max-width:900px;margin:auto;padding:6px 16px 48px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.card>b:first-child{display:block;font-size:16px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;box-shadow:var(--sh)}
+.si{font-style:normal;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:var(--ac2);margin-bottom:8px;font-size:17px}
+.stat b{display:block;font-size:24px;line-height:1.15;font-weight:700}
+.stat span{color:var(--mu);font-size:12px}
 button,input,select{font:inherit;color:var(--tx)}
-button{border:1px solid var(--bd);background:var(--card);border-radius:10px;padding:8px 12px;cursor:pointer}
-button.on,button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
-input,select{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg)}
-label{font-size:12px;color:var(--mu);display:block}
-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end}
-.sc{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left}
-.x{color:var(--wa);border:0;background:none;padding:2px 6px}
-.bar{height:10px;background:var(--bd);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
-.mu{color:var(--mu);font-size:13px}.tip{background:var(--ac2);border-radius:10px;padding:8px 12px;margin:6px 0}
+button{border:1px solid var(--bd);background:var(--card);border-radius:12px;padding:9px 14px;cursor:pointer;transition:transform .12s ease}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid color-mix(in srgb,var(--ac) 45%,transparent);outline-offset:2px}
+main button:not(.p):not(.x){background:var(--ac2);border-color:transparent;font-weight:500}
+button.p{background:var(--g);color:#fff;border-color:transparent;font-weight:600}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--bg)}
+input[type=range]{padding:0;accent-color:var(--ac)}
+label{display:block;font-size:12px;font-weight:600;color:var(--mu);margin-bottom:4px}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;align-items:end}
+.sc{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:9px 10px;border-bottom:1px solid var(--bd);text-align:left}
+th{font-size:12px;font-weight:600;color:var(--mu);background:var(--ac2)}
+th:first-child{border-top-left-radius:10px}th:last-child{border-top-right-radius:10px}
+tr:last-child td{border-bottom:0}
+.x{color:var(--wa);border:0;background:none;padding:2px 8px;border-radius:8px}
+.bar{height:10px;background:var(--ac2);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--g);border-radius:999px}
+.mu{color:var(--mu);font-size:13px}
+.tip{background:var(--ac2);border-radius:14px;padding:10px 14px;margin:8px 0}
+.empty{text-align:center;color:var(--mu);padding:22px 8px;font-size:14px}
+.empty span{display:block;font-size:30px;margin-bottom:6px}
 svg text{fill:var(--mu);font-size:10px}
+.hero{position:relative;overflow:hidden;background:var(--g);color:#fff;border-radius:24px;padding:22px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 18px 40px -20px rgba(10,77,58,.7)}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:210px;height:210px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
+.hero h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.hero p{margin:4px 0 0;font-size:14px;opacity:.88}
+.pill{display:inline-block;margin-top:12px;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.18);font-size:13px;font-weight:600}
+.ring{position:relative;flex:none;width:112px;height:112px;z-index:1}
+.ring svg{display:block;transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1}
+.ring .v b{font-size:30px;font-weight:700}
+.ring .v small{display:block;margin-top:3px;font-size:11px;opacity:.85}
+@keyframes ringin{from{stroke-dashoffset:289}}
+@media (max-width:720px){
+ nav{position:fixed;top:auto;bottom:0;left:0;right:0;max-width:none;margin:0;gap:4px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--bd);box-shadow:0 -8px 24px -12px rgba(10,77,58,.28);backdrop-filter:none;-webkit-backdrop-filter:none}
+ nav button{flex-direction:column;gap:2px;min-width:68px;padding:7px 10px;border:0;border-radius:14px;background:transparent;box-shadow:none;font-size:11px;font-weight:500}
+ nav button .ic{font-size:20px}
+ nav button.on{background:var(--ac2);color:var(--ac);font-weight:700}
+ main{padding-bottom:96px}
+ .tools .ib span,.brand small{display:none}
+ .hero{padding:18px}.hero h2{font-size:21px}.ring{width:96px;height:96px}.ring svg{width:96px;height:96px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header><h1>🌿 Shaxsiy salomatlik, fitnes va boʻsh vaqt tizimi</h1>
-<div><button onclick="th()">🌓</button> <button onclick="ex()">Eksport</button> <button onclick="document.getElementById('im').click()">Import</button><input id="im" type="file" accept=".json" hidden onchange="imp(this)"></div></header>
+<header><div class="brand"><span class="logo" aria-hidden="true">🌿</span><div><h1>Salomatlik tizimi</h1><small>Shaxsiy salomatlik, fitnes va boʻsh vaqt</small></div></div>
+<div class="tools"><button class="ib" onclick="th()" aria-label="Mavzuni almashtirish" title="Mavzu">🌓</button><button class="ib" onclick="ex()" title="Eksport">⬇️<span>Eksport</span></button><button class="ib" onclick="document.getElementById('im').click()" title="Import">⬆️<span>Import</span></button><input id="im" type="file" accept=".json" hidden onchange="imp(this)"></div></header>
 <nav id="nav"></nav>
 <main id="v"></main>
 <script>
-var T=[["d","Bosh sahifa"],["h","Salomatlik"],["w","Mashqlar"],["l","Boʻsh vaqt"],["g","Maqsadlar"],["a","Farovonlik testi"],["k","Dataset tahlili"]];
-var D={h:[],w:[],l:[],g:{steps:8000,sleep:8,water:2,workouts:3,leisure:3}};
+var T=[["d","Bosh sahifa"],["h","Salomatlik"],["w","Mashqlar"],["f","Ovqat"],["l","Boʻsh vaqt"],["g","Maqsadlar"],["a","Farovonlik testi"],["k","Dataset tahlili"]];
+var D={h:[],w:[],l:[],f:[],g:{steps:8000,sleep:8,water:2,workouts:3,leisure:3,kcal:2000}};
 try{var s=localStorage.getItem("shf");if(s)D=Object.assign(D,JSON.parse(s))}catch(e){}
 var tab="d";
 function sv(){try{localStorage.setItem("shf",JSON.stringify(D))}catch(e){}}
@@ -48,7 +97,8 @@ function $(i){return document.getElementById(i)}
 function td(){return new Date().toISOString().slice(0,10)}
 function ago(n){var d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)}
 function th(){var r=document.documentElement,c=r.getAttribute("data-theme");r.setAttribute("data-theme",c==="dark"?"light":"dark")}
-function nav(){$("nav").innerHTML=T.map(function(t){return '<button class="'+(t[0]===tab?"on":"")+'" onclick="tab=\''+t[0]+'\';nav();R()">'+t[1]+'</button>'}).join("")}
+var IC={d:"🏠",h:"❤️",w:"🏋️",f:"🍽️",l:"🎨",g:"🎯",a:"😊",k:"🌍",s:"🛡️"};
+function nav(){$("nav").innerHTML=T.map(function(t){return '<button class="'+(t[0]===tab?"on":"")+'"'+(t[0]===tab?' aria-current="page"':"")+' onclick="tab=\''+t[0]+'\';nav();R();window.scrollTo(0,0)"><span class="ic" aria-hidden="true">'+(IC[t[0]]||"•")+'</span><span>'+t[1]+'</span></button>'}).join("")}
 function ex(){var a=document.createElement("a");a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(D));a.download="salomatlik-"+td()+".json";a.click()}
 function imp(f){var r=new FileReader();r.onload=function(){try{D=Object.assign(D,JSON.parse(r.result));sv();R()}catch(e){alert("Fayl notoʻgʻri")}};if(f.files[0])r.readAsText(f.files[0])}
 function sum(a,k){return a.reduce(function(s,x){return s+(+x[k]||0)},0)}
@@ -63,7 +113,7 @@ function chart(a,k,u){
  return '<svg viewBox="0 0 340 120" width="100%" role="img" aria-label="'+k+' grafigi"><polyline points="'+pts+'" fill="none" stroke="var(--ac)" stroke-width="2.5"/><text x="2" y="24">'+f(mx,1)+'</text><text x="2" y="102">'+f(mn,1)+'</text><text x="20" y="116">'+p[0].date.slice(5)+'</text><text x="290" y="116">'+p[p.length-1].date.slice(5)+'</text></svg>'}
 function tbl(k,cols){
  var a=D[k].slice().sort(function(x,y){return x.date<y.date?1:-1}).slice(0,30);
- return '<div class="sc"><table><tr>'+cols.map(function(c){return "<th>"+c[1]+"</th>"}).join("")+"<th></th></tr>"+a.map(function(r){return "<tr>"+cols.map(function(c){return "<td>"+esc(r[c[0]])+"</td>"}).join("")+'<td><button class="x" onclick="del(\''+k+'\','+r.id+')">✕</button></td></tr>'}).join("")+"</table></div>"}
+ if(!a.length)return '<div class="empty"><span>🌱</span>Hozircha yozuv yoʻq. Yuqoridagi formadan birinchisini qoʻshing.</div>';return '<div class="sc"><table><tr>'+cols.map(function(c){return "<th>"+c[1]+"</th>"}).join("")+"<th></th></tr>"+a.map(function(r){return "<tr>"+cols.map(function(c){return "<td>"+esc(r[c[0]])+"</td>"}).join("")+'<td><button class="x" onclick="del(\''+k+'\','+r.id+')">✕</button></td></tr>'}).join("")+"</table></div>"}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function del(k,id){D[k]=D[k].filter(function(x){return x.id!==id});sv();R()}
 function add(k,e){e.preventDefault();var o={id:Date.now()},fd=new FormData(e.target);fd.forEach(function(v,n){o[n]=v});if(!o.date)o.date=td();D[k].push(o);sv();R()}
@@ -82,22 +132,62 @@ function tips(){
  if(week(D.w).length<g.workouts)t.push("🏋️ Bu hafta mashqlar maqsaddan kam. Qisqa 20 daqiqalik mashq ham foydali.");
  if(week(D.l).length<g.leisure)t.push("🎨 Boʻsh vaqt mashgʻulotlari kam — kitob, sayr yoki doʻstlar bilan uchrashuv stressni kamaytiradi.");
  if(avg(h,"mood")&&avg(h,"mood")<3)t.push("💬 Kayfiyat past. Yaqinlaringiz bilan gaplashing; holat davom etsa, mutaxassisga murojaat qiling.");
+ var tk=dayVal("f","kcal",td()),gk=g.kcal||2000;if(tk!=null&&tk>gk*1.15)t.push("🍽️ Bugungi kaloriya maqsaddan 15% dan koʻp. Kechki ovqatni yengilroq qiling.");
  return t.length?t:["✅ Ajoyib! Barcha maqsadlar yoʻlida. Shu tempni saqlang."]}
+var MEALS=["Nonushta","Tushlik","Kechki ovqat","Gazak"];
+var FOODS=[["Osh (1 porsiya)",450],["Non (1 boʻlak)",130],["Somsa (1 dona)",300],["Olma (1 dona)",80],["Tuxum (1 dona)",70],["Sut (1 stakan)",120],["Banan (1 dona)",105],["Tvorog (100 g)",85]];
+var MET={"Yugurish":9.8,"Yurish":3.5,"Kuch mashqi":5,"Velosiped":7.5,"Suzish":6,"Yoga":2.5,"Futbol":7,"Boshqa":4};
+function uid(){return Date.now()+Math.floor(Math.random()*1e6)}
+function dayList(n){var r=[],i;for(i=n-1;i>=0;i--)r.push(ago(i));return r}
+function dayVal(c,k,d){var a=(D[c]||[]).filter(function(x){return x.date===d&&x[k]!==""&&x[k]!=null&&!isNaN(+x[k])});return a.length?sum(a,k):null}
+function bars(ttl,c,k,goal,unit){
+ var ds=dayList(7),v=ds.map(function(d){return dayVal(c,k,d)}),mx=Math.max.apply(0,v.map(function(x){return x||0}).concat([goal||0,1]))*1.15,s="",i;
+ for(i=0;i<7;i++){var x=20+i*45,hh=v[i]==null?0:Math.round(v[i]/mx*90),hit=goal&&v[i]!=null&&v[i]>=goal;
+  if(v[i]!=null)s+='<rect x="'+x+'" y="'+(105-hh)+'" width="30" height="'+hh+'" rx="4" fill="var(--ac)" opacity="'+(hit?1:.6)+'"><title>'+ds[i]+': '+f(v[i],1)+' '+unit+'</title></rect><text x="'+(x+15)+'" y="'+(101-hh)+'" text-anchor="middle">'+f(v[i],1)+'</text>';
+  s+='<text x="'+(x+15)+'" y="120" text-anchor="middle">'+ds[i].slice(8)+'</text>'}
+ var gy=goal?105-Math.round(goal/mx*90):null;
+ return '<div class="card"><b>'+ttl+'</b><svg viewBox="0 0 340 128" width="100%" role="img" aria-label="'+ttl+' — 7 kunlik grafik">'+(gy!=null?'<line x1="10" x2="335" y1="'+gy+'" y2="'+gy+'" stroke="var(--wa)" stroke-dasharray="4 3"/>':"")+s+'</svg><p class="mu">Soʻnggi 7 kun'+(goal?'. Qizil chiziq — maqsad ('+goal+' '+unit+').':'.')+'</p></div>'}
+function weekCards(){return bars("Qadamlar","h","steps",D.g.steps,"qadam")+bars("Uyqu (soat)","h","sleep",D.g.sleep,"soat")+bars("Suv (litr)","h","water",D.g.water,"l")+bars("Kaloriya (kkal)","f","kcal",D.g.kcal||2000,"kkal")}
+function streak(){var s=0,i;for(i=0;i<400;i++){var d=ago(i),has=["h","w","l","f"].some(function(k){return (D[k]||[]).some(function(x){return x.date===d})});if(has)s++;else if(i>0)break}return s}
+function extraStats(){var tk=dayVal("f","kcal",td())||0;return '<div class="stat"><i class="si">🍽️</i><b>'+f(tk)+'</b><span>bugungi kkal / '+(D.g.kcal||2000)+'</span></div>'}
+function badges(){
+ var st=streak(),g=D.g,t=td(),b=[["🔥","3 kun ketma-ket",st>=3],["🔥","7 kun ketma-ket",st>=7],["🚶","Bugun qadam maqsadi",g.steps>0&&(dayVal("h","steps",t)||0)>=g.steps],["💧","Bugun suv maqsadi",g.water>0&&(dayVal("h","water",t)||0)>=g.water],["😴","Bugun uyqu maqsadi",g.sleep>0&&(dayVal("h","sleep",t)||0)>=g.sleep],["🏅","Haftalik ball 80+",score()>=80]];
+ return '<div class="card"><b>Nishonlar</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+b.map(function(x){return '<span class="tip" style="margin:0;opacity:'+(x[2]?1:.4)+'">'+x[0]+' '+x[1]+(x[2]?' ✓':'')+'</span>'}).join("")+'</div></div>'}
+function quickWater(ml){var t=td(),e=D.h.filter(function(x){return x.date===t})[0];if(!e){e={id:uid(),date:t};D.h.push(e)}e.water=Math.round(((+e.water||0)+ml/1000)*100)/100;sv();R()}
+function quickCard(){return '<div class="card"><b>Tez qoʻshish</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button onclick="quickWater(250)">💧 +250 ml suv</button><button onclick="quickWater(500)">💧 +500 ml suv</button></div></div>'}
+function quickFood(i){var p=FOODS[i],hr=new Date().getHours(),m=hr<11?MEALS[0]:hr<16?MEALS[1]:hr<21?MEALS[2]:MEALS[3];D.f.push({id:uid(),date:td(),meal:m,name:p[0],kcal:p[1]});sv();R()}
+function burn(a){var l=D.h.filter(function(x){return +x.weight>0}).sort(function(p,q){return p.date<q.date?1:-1})[0],kg=l?+l.weight:70;return a.reduce(function(s,x){var m=MET[x.type]||4,k=/^Past/.test(x.lvl)?.8:/^Yuqori/.test(x.lvl)?1.2:1;return s+m*k*kg*((+x.min||0)/60)},0)}
+function foodHTML(){
+ var t=td(),tot=dayVal("f","kcal",t)||0,goal=D.g.kcal||2000,pct=Math.min(100,Math.round(tot/goal*100)),
+ split=MEALS.map(function(m){return m+': <b>'+f(sum(D.f.filter(function(x){return x.date===t&&x.meal===m}),"kcal"))+'</b>'}).join(" · ");
+ return '<div class="card"><div class="mu">Bugungi kaloriya</div><b style="font-size:28px">'+f(tot)+' / '+goal+' kkal</b><div class="bar"><i style="width:'+pct+'%"></i></div><p class="mu" style="margin-bottom:0">'+split+'</p></div>'+
+ '<div class="card"><b>Tez qoʻshish</b> <span class="mu">(taxminiy qiymatlar)</span><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+FOODS.map(function(p,i){return '<button onclick="quickFood('+i+')">'+esc(p[0])+' · '+p[1]+'</button>'}).join("")+'</div></div>'+
+ '<div class="card"><form onsubmit="add(\'f\',event)"><div><label>Sana</label><input type="date" name="date" value="'+t+'"></div><div><label>Vaqti</label><select name="meal">'+MEALS.map(function(m){return '<option>'+m+'</option>'}).join("")+'</select></div><div><label>Taom</label><input name="name" maxlength="60" placeholder="Masalan: palov" required></div><div><label>Kaloriya (kkal)</label><input type="number" name="kcal" min="0" max="5000" required></div><button class="p">Qoʻshish</button></form></div>'+
+ '<div class="card">'+tbl("f",[["date","Sana"],["meal","Vaqti"],["name","Taom"],["kcal","kkal"]])+'</div>'+bars("Kaloriya (kkal)","f","kcal",goal,"kkal")}
+function heroCard(sc){
+ var d=new Date(),hr=d.getHours(),C=289,
+ gr=hr<5?"Xayrli tun":hr<12?"Xayrli tong":hr<18?"Xayrli kun":"Xayrli kech",
+ DN=["Yakshanba","Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba"],
+ MN=["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentabr","oktabr","noyabr","dekabr"],
+ msg=sc>=80?"Ajoyib natija, shu tempni saqlang.":sc>=50?"Yaxshi yoʻldasiz, maqsadlarga oz qoldi.":sc>0?"Boshlanish yaxshi. Bugun yana bir qadam qoʻying.":"Bugungi koʻrsatkichlaringizni kiriting.",
+ an=window.__ringDone?"":' style="animation:ringin 1.1s ease-out"';
+ window.__ringDone=true;
+ return '<section class="hero"><div><h2>'+gr+'!</h2><p>'+DN[d.getDay()]+', '+d.getDate()+'-'+MN[d.getMonth()]+'</p><p>'+msg+'</p><span class="pill">🔥 '+streak()+' kun ketma-ket</span></div><div class="ring" role="img" aria-label="Haftalik farovonlik balli: '+sc+' / 100"><svg width="112" height="112" viewBox="0 0 112 112"><circle cx="56" cy="56" r="46" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="10"/><circle cx="56" cy="56" r="46" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+Math.round(C*(1-sc/100))+'"'+an+'/></svg><div class="v"><div><b>'+sc+'</b><small>/ 100 ball</small></div></div></div></section>'}
 function R(){
  var m=$("v"),h=week(D.h),b=bmi(),html="";
  if(tab==="d"){
   var sc=score();
-  html='<div class="card"><div class="mu">Haftalik farovonlik balli</div><b style="font-size:34px">'+sc+'/100</b><div class="bar"><i style="width:'+sc+'%"></i></div></div>'+
-  '<div class="grid"><div class="stat"><b>'+f(avg(h,"steps"))+'</b><span>oʻrtacha qadam</span></div><div class="stat"><b>'+f(avg(h,"sleep"),1)+' soat</b><span>oʻrtacha uyqu</span></div><div class="stat"><b>'+f(avg(h,"water"),1)+' l</b><span>oʻrtacha suv</span></div><div class="stat"><b>'+week(D.w).length+'</b><span>mashq (7 kun)</span></div><div class="stat"><b>'+week(D.l).length+'</b><span>boʻsh vaqt (7 kun)</span></div><div class="stat"><b>'+(b?f(b.v,1):"—")+'</b><span>BMI '+(b?"· "+b.t:"")+'</span></div></div>'+
+  html=heroCard(sc)+
+  '<div class="grid"><div class="stat"><i class="si">🚶</i><b>'+f(avg(h,"steps"))+'</b><span>oʻrtacha qadam</span></div><div class="stat"><i class="si">😴</i><b>'+f(avg(h,"sleep"),1)+' soat</b><span>oʻrtacha uyqu</span></div><div class="stat"><i class="si">💧</i><b>'+f(avg(h,"water"),1)+' l</b><span>oʻrtacha suv</span></div><div class="stat"><i class="si">🏋️</i><b>'+week(D.w).length+'</b><span>mashq (7 kun)</span></div><div class="stat"><i class="si">🎨</i><b>'+week(D.l).length+'</b><span>boʻsh vaqt (7 kun)</span></div><div class="stat"><i class="si">⚖️</i><b>'+(b?f(b.v,1):"—")+'</b><span>BMI '+(b?"· "+b.t:"")+'</span></div>'+extraStats()+'</div>'+
   '<div class="card" style="margin-top:14px"><b>Tavsiyalar</b>'+tips().map(function(t){return '<div class="tip">'+t+"</div>"}).join("")+'</div>'+
-  '<div class="card"><b>Vazn dinamikasi (kg)</b>'+chart(D.h,"weight")+'</div><div class="card"><b>Qadamlar</b>'+chart(D.h,"steps")+'</div>'+
+  '<div class="card"><b>Vazn dinamikasi (kg)</b>'+chart(D.h,"weight")+'</div>'+quickCard()+badges()+weekCards()+
   '<p class="mu">Ma’lumotlar faqat sizning brauzeringizda saqlanadi. Tizim tibbiy tashxis qoʻymaydi.</p>'}
  if(tab==="h")html='<div class="card"><form onsubmit="add(\'h\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Vazn (kg)</label><input type="number" step="0.1" name="weight"></div><div><label>Boʻy (sm)</label><input type="number" name="height"></div><div><label>Qadamlar</label><input type="number" name="steps"></div><div><label>Uyqu (soat)</label><input type="number" step="0.5" name="sleep"></div><div><label>Suv (litr)</label><input type="number" step="0.1" name="water"></div><div><label>Puls</label><input type="number" name="pulse"></div><div><label>Kayfiyat</label><select name="mood"><option value="">—</option><option value="1">1 😞</option><option value="2">2 😕</option><option value="3">3 😐</option><option value="4">4 🙂</option><option value="5">5 😄</option></select></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("h",[["date","Sana"],["weight","Vazn"],["steps","Qadam"],["sleep","Uyqu"],["water","Suv"],["pulse","Puls"],["mood","Kayfiyat"]])+"</div>";
- if(tab==="w")html='<div class="card"><form onsubmit="add(\'w\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Turi</label><select name="type"><option>Yugurish</option><option>Yurish</option><option>Kuch mashqi</option><option>Velosiped</option><option>Suzish</option><option>Yoga</option><option>Futbol</option><option>Boshqa</option></select></div><div><label>Davomiyligi (daq)</label><input type="number" name="min" required></div><div><label>Intensivlik</label><select name="lvl"><option>Past</option><option selected>Oʻrta</option><option>Yuqori</option></select></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("w",[["date","Sana"],["type","Tur"],["min","Daq."],["lvl","Intensivlik"]])+'</div><p class="mu">Jami: '+sum(D.w,"min")+" daqiqa mashq</p>";
+ if(tab==="w")html='<div class="card"><form onsubmit="add(\'w\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Turi</label><select name="type"><option>Yugurish</option><option>Yurish</option><option>Kuch mashqi</option><option>Velosiped</option><option>Suzish</option><option>Yoga</option><option>Futbol</option><option>Boshqa</option></select></div><div><label>Davomiyligi (daq)</label><input type="number" name="min" required></div><div><label>Intensivlik</label><select name="lvl"><option>Past</option><option selected>Oʻrta</option><option>Yuqori</option></select></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("w",[["date","Sana"],["type","Tur"],["min","Daq."],["lvl","Intensivlik"]])+'</div><p class="mu">Jami: '+sum(D.w,"min")+" daqiqa mashq. Oxirgi 7 kunda taxminan "+f(burn(week(D.w)))+" kkal yoqilgan (MET asosida, taxminiy).</p>";
  if(tab==="l")html='<div class="card"><form onsubmit="add(\'l\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Mashgʻulot</label><input name="name" placeholder="Kitob oʻqish, sayr..." required></div><div><label>Turkum</label><select name="cat"><option>Ijod</option><option>Oʻqish</option><option>Tabiat</option><option>Ijtimoiy</option><option>Oʻyin</option><option>Dam olish</option></select></div><div><label>Daqiqa</label><input type="number" name="min"></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("l",[["date","Sana"],["name","Mashgʻulot"],["cat","Turkum"],["min","Daq."]])+"</div>";
- if(tab==="g"){var g=D.g;html='<div class="card"><b>Haftalik/kunlik maqsadlar</b><form onsubmit="event.preventDefault();var d=new FormData(event.target);d.forEach(function(v,k){D.g[k]=+v});sv();R()"><div><label>Qadam (kun)</label><input type="number" name="steps" value="'+g.steps+'"></div><div><label>Uyqu (soat)</label><input type="number" step="0.5" name="sleep" value="'+g.sleep+'"></div><div><label>Suv (litr)</label><input type="number" step="0.1" name="water" value="'+g.water+'"></div><div><label>Mashq (hafta)</label><input type="number" name="workouts" value="'+g.workouts+'"></div><div><label>Boʻsh vaqt (hafta)</label><input type="number" name="leisure" value="'+g.leisure+'"></div><button class="p">Saqlash</button></form></div>'}
+ if(tab==="g"){var g=D.g;html='<div class="card"><b>Haftalik/kunlik maqsadlar</b><form onsubmit="event.preventDefault();var d=new FormData(event.target);d.forEach(function(v,k){D.g[k]=+v});sv();R()"><div><label>Qadam (kun)</label><input type="number" name="steps" value="'+g.steps+'"></div><div><label>Uyqu (soat)</label><input type="number" step="0.5" name="sleep" value="'+g.sleep+'"></div><div><label>Suv (litr)</label><input type="number" step="0.1" name="water" value="'+g.water+'"></div><div><label>Mashq (hafta)</label><input type="number" name="workouts" value="'+g.workouts+'"></div><div><label>Boʻsh vaqt (hafta)</label><input type="number" name="leisure" value="'+g.leisure+'"></div><div><label>Kaloriya (kun)</label><input type="number" name="kcal" value="'+(g.kcal||2000)+'"></div><button class="p">Saqlash</button></form></div>'}
  if(tab==="a")html='<div class="card"><b>Farovonlik testi</b><p class="mu">Jahon baxt hisoboti (World Happiness Report) omillariga asoslangan: ijtimoiy qoʻllab-quvvatlash, erkinlik, saxovat, hayotdan mamnunlik, sogʻliq. Har birini 1–10 baholang.</p><div id="q"></div><button class="p" onclick="wb()">Natijani koʻrish</button><div id="r"></div></div>',m.innerHTML=html,wq();
- if(tab==="k")html=whHTML();m.innerHTML=html;if(tab==="a")wq();if(tab==="k")whInit()}
+ if(tab==="f")html=foodHTML();if(tab==="k")html=whHTML();m.innerHTML=html;if(tab==="a")wq();if(tab==="k")whInit()}
 var Q=["Hayotimdan umuman mamnunman","Yaqinlarimdan yetarli qoʻllab-quvvatlash olaman","Oʻz qarorlarimni erkin qabul qila olaman","Boshqalarga yordam berish imkoniyatim bor","Jismoniy sogʻligʻimdan mamnunman","Kelajakka umid bilan qarayman"];
 function wq(){$("q").innerHTML=Q.map(function(t,i){return '<label style="margin-top:8px">'+t+': <b id="o'+i+'">5</b></label><input type="range" min="1" max="10" value="5" oninput="$(\'o'+i+'\').textContent=this.value" id="s'+i+'">'}).join("")}
 function wb(){var t=0;Q.forEach(function(_,i){t+=+$("s"+i).value});var p=Math.round(t/(Q.length*10)*100);
@@ -128,6 +218,393 @@ function whDraw(){
 function whInit(){whDraw()}
 
 nav();R();
+</script>
+<script>
+/* Xavfsizlik moduli: parol bilan kirish (PBKDF2), AES-256-GCM shifrlash,
+   urinishlarni cheklash, avtomatik qulflash, shifrlangan eksport/import,
+   import qilinadigan ma'lumotni tekshirish (XSS himoyasi), "Xavfsizlik" bo'limi. */
+(function () {
+  "use strict";
+
+  var K_META = "shf_sec", K_DATA = "shf_enc", K_OLD = "shf", K_TRY = "shf_try";
+  var ITER = 250000, IDLE = 5 * 60 * 1000, MAXTRY = 5;
+  var DEF = { h: [], w: [], l: [], f: [], g: { steps: 8000, sleep: 8, water: 2, workouts: 3, leisure: 3, kcal: 2000 } };
+  var ok = !!(window.crypto && window.crypto.subtle);
+  var te = new TextEncoder(), tdc = new TextDecoder();
+  var key = null, idleT = null, queue = Promise.resolve(), ov = null, bound = false;
+
+  /* ---------- yordamchi funksiyalar ---------- */
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function today() { return window.td ? window.td() : new Date().toISOString().slice(0, 10); }
+  function b64(buf) {
+    var a = new Uint8Array(buf), s = "", i;
+    for (i = 0; i < a.length; i += 8192) s += String.fromCharCode.apply(null, a.subarray(i, i + 8192));
+    return btoa(s);
+  }
+  function ub64(s) {
+    var b = atob(s), a = new Uint8Array(b.length), i;
+    for (i = 0; i < b.length; i++) a[i] = b.charCodeAt(i);
+    return a;
+  }
+
+  /* ---------- kriptografiya ---------- */
+  function derive(pw, salt, iter) {
+    return crypto.subtle.importKey("raw", te.encode(pw), "PBKDF2", false, ["deriveKey"]).then(function (m) {
+      return crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: salt, iterations: iter, hash: "SHA-256" },
+        m, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    });
+  }
+  function seal(k, text) {
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, te.encode(text)).then(function (ct) {
+      var o = new Uint8Array(12 + ct.byteLength);
+      o.set(iv, 0); o.set(new Uint8Array(ct), 12);
+      return b64(o);
+    });
+  }
+  function unseal(k, str) {
+    var a = ub64(str);
+    return crypto.subtle.decrypt({ name: "AES-GCM", iv: a.subarray(0, 12) }, k, a.subarray(12)).then(function (p) { return tdc.decode(p); });
+  }
+
+  /* ---------- ma'lumotni tekshirish (import / yuklash) ---------- */
+  function sanitize(o) {
+    var out = {}, re = /^\d{4}-\d{2}-\d{2}$/, bad = { __proto__: 1, constructor: 1, prototype: 1 };
+    if (!o || typeof o !== "object") return out;
+    ["h", "w", "l", "f"].forEach(function (k) {
+      if (!Array.isArray(o[k])) return;
+      out[k] = o[k].slice(0, 5000).filter(function (x) { return x && typeof x === "object" && !Array.isArray(x); }).map(function (x) {
+        var y = {};
+        Object.keys(x).slice(0, 20).forEach(function (n) {
+          if (bad[n]) return;
+          var v = x[n];
+          if (typeof v === "string") y[n] = v.slice(0, 200);
+          else if (typeof v === "number" && isFinite(v)) y[n] = v;
+        });
+        y.id = Math.floor(+x.id) || (Date.now() + Math.floor(Math.random() * 1e6)); /* id faqat son: onclick ichida ishlatiladi */
+        y.date = (typeof y.date === "string" && re.test(y.date)) ? y.date : today();
+        return y;
+      });
+    });
+    if (o.g && typeof o.g === "object") {
+      out.g = {};
+      ["steps", "sleep", "water", "workouts", "leisure", "kcal"].forEach(function (n) {
+        var v = +o.g[n];
+        if (isFinite(v) && v >= 0 && v <= 100000) out.g[n] = v;
+      });
+    }
+    return out;
+  }
+  function applyData(obj) {
+    var s = sanitize(obj), d = clone(DEF);
+    ["h", "w", "l", "f"].forEach(function (k) { if (s[k]) d[k] = s[k]; });
+    if (s.g) Object.assign(d.g, s.g);
+    window.D = d;
+  }
+  function mergeData(obj) {
+    var s = sanitize(obj), d = window.D;
+    ["h", "w", "l", "f"].forEach(function (k) { if (s[k]) d[k] = s[k]; });
+    if (s.g) Object.assign(d.g, s.g);
+    save();
+    window.R();
+  }
+
+  /* ---------- saqlash ---------- */
+  function save() {
+    if (!ok) { lsSet(K_OLD, JSON.stringify(window.D)); return; }
+    if (!key) return;
+    var k = key, snap = JSON.stringify(window.D);
+    queue = queue.then(function () { return seal(k, snap); }).then(function (s) { lsSet(K_DATA, s); }).catch(function () {});
+  }
+
+  /* ---------- urinishlarni cheklash ---------- */
+  function tries() {
+    try { var t = JSON.parse(lsGet(K_TRY)); if (t && typeof t.n === "number") return t; } catch (e) {}
+    return { n: 0, until: 0 };
+  }
+  function resetTries() { lsDel(K_TRY); }
+  function waitMsg(t) { return Math.ceil((t.until - Date.now()) / 1000); }
+  function fail() {
+    var t = tries();
+    t.n++;
+    if (t.n >= MAXTRY) t.until = Date.now() + Math.min(600000, 15000 * Math.pow(2, t.n - MAXTRY));
+    lsSet(K_TRY, JSON.stringify(t));
+    return t.until > Date.now()
+      ? "Parol notoʻgʻri. Urinishlar " + waitMsg(t) + " soniyaga bloklandi."
+      : "Parol notoʻgʻri. Qolgan urinishlar: " + (MAXTRY - t.n) + ".";
+  }
+
+  /* ---------- oyna (modal) ---------- */
+  function closeModal() { if (ov && ov.parentNode) ov.parentNode.removeChild(ov); ov = null; }
+  function setInert(on) {
+    ["header", "nav", "main"].forEach(function (t) {
+      var e = document.querySelector(t);
+      if (e) { if (on) e.setAttribute("inert", ""); else e.removeAttribute("inert"); }
+    });
+  }
+  /* fn(values) -> Promise<xato matni | null>. Xato bo'lsa oyna ochiq qoladi. */
+  function ask(o, fn) {
+    return new Promise(function (res) {
+      closeModal();
+      var box = document.createElement("div");
+      box.className = "sec-ov" + (o.cancel ? " m" : "");
+      var h = '<div class="sec-box" role="dialog" aria-modal="true" aria-labelledby="sec-t"><h2 id="sec-t">' + esc(o.title) + "</h2>" +
+        (o.desc ? '<p class="sec-d">' + esc(o.desc) + "</p>" : "") + '<form autocomplete="off">';
+      (o.fields || []).forEach(function (f) {
+        h += "<label>" + esc(f.label) + '</label><input type="password" autocomplete="' + (f.ac || "off") + '"' + (f.opt ? "" : " required") + ">";
+      });
+      h += '<div class="sec-m" role="alert"></div><div class="sec-b"><button class="p" type="submit">' + esc(o.ok || "OK") + "</button>";
+      if (o.cancel) h += '<button type="button" class="sec-c">Bekor qilish</button>';
+      if (o.extraBtn) h += '<button type="button" class="sec-x">' + esc(o.extraBtn.text) + "</button>";
+      h += "</div></form></div>";
+      box.innerHTML = h;
+      document.body.appendChild(box);
+      ov = box;
+      var form = box.querySelector("form"), ins = box.querySelectorAll("input"), msg = box.querySelector(".sec-m"), btn = box.querySelector(".p");
+      form.onsubmit = function (e) {
+        e.preventDefault();
+        var v = [].map.call(ins, function (i) { return i.value; });
+        btn.disabled = true; msg.textContent = "Tekshirilmoqda…";
+        Promise.resolve().then(function () { return fn(v); }).then(function (err) {
+          if (err) { msg.textContent = err; btn.disabled = false; if (ins[0]) ins[0].select(); }
+          else { closeModal(); res(true); }
+        }, function () { msg.textContent = "Xatolik yuz berdi."; btn.disabled = false; });
+      };
+      var c = box.querySelector(".sec-c");
+      if (c) { c.onclick = function () { closeModal(); res(false); }; box.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeModal(); res(false); } }); }
+      var x = box.querySelector(".sec-x");
+      if (x) x.onclick = o.extraBtn.fn;
+      if (ins[0]) ins[0].focus();
+    });
+  }
+
+  /* ---------- parol o'rnatish / kirish ---------- */
+  function createVault(pw) {
+    var salt = crypto.getRandomValues(new Uint8Array(16));
+    return derive(pw, salt, ITER).then(function (k) {
+      return seal(k, "shf-ok").then(function (c) {
+        lsSet(K_META, JSON.stringify({ s: b64(salt), i: ITER, c: c }));
+        var old = lsGet(K_OLD), parsed = {};
+        try { if (old) parsed = JSON.parse(old); } catch (e) {}
+        applyData(parsed); /* eski shifrlanmagan ma'lumot bo'lsa, ko'chiriladi */
+        key = k;
+        return seal(k, JSON.stringify(window.D));
+      }).then(function (s) { lsSet(K_DATA, s); lsDel(K_OLD); return null; });
+    });
+  }
+  function setupFlow() {
+    setInert(true);
+    ask({
+      title: "🔐 Parol oʻrnating",
+      desc: "Salomatlik ma’lumotlaringiz shu parol bilan shifrlanadi. Parolni unutsangiz, ma’lumotlarni tiklab boʻlmaydi.",
+      fields: [{ label: "Yangi parol (kamida 8 belgi)", ac: "new-password" }, { label: "Parolni takrorlang", ac: "new-password" }],
+      ok: "Oʻrnatish"
+    }, function (v) {
+      if (v[0].length < 8) return Promise.resolve("Parol kamida 8 belgidan iborat boʻlsin.");
+      if (v[0] !== v[1]) return Promise.resolve("Parollar mos kelmadi.");
+      return createVault(v[0]);
+    }).then(function (r) { if (r) afterUnlock(); });
+  }
+  function unlockFlow() {
+    setInert(true);
+    var meta;
+    try { meta = JSON.parse(lsGet(K_META)); } catch (e) { meta = null; }
+    if (!meta || !meta.s || !meta.c) { wipe(true); return; }
+    var iter = (+meta.i >= 1000 && +meta.i <= 2000000) ? +meta.i : ITER;
+    ask({
+      title: "🔒 Tizim qulflangan",
+      desc: "Davom etish uchun parolingizni kiriting.",
+      fields: [{ label: "Parol", ac: "current-password" }],
+      ok: "Ochish",
+      extraBtn: { text: "Parolni unutdim", fn: function () { wipe(false); } }
+    }, function (v) {
+      var t = tries();
+      if (t.until > Date.now()) return Promise.resolve("Juda koʻp xato urinish. " + waitMsg(t) + " soniyadan keyin urinib koʻring.");
+      return derive(v[0], ub64(meta.s), iter).then(function (k) {
+        return unseal(k, meta.c).then(function (x) {
+          if (x !== "shf-ok") throw 1;
+          key = k; resetTries();
+          var d = lsGet(K_DATA);
+          return d ? unseal(k, d) : "{}";
+        }).then(function (j) { applyData(JSON.parse(j)); return null; }, function () { key = null; return fail(); });
+      });
+    }).then(function (r) { if (r) afterUnlock(); });
+  }
+  function afterUnlock() {
+    setInert(false);
+    bindIdle();
+    arm();
+    window.nav();
+    window.R();
+  }
+
+  /* ---------- qulflash ---------- */
+  function lock() {
+    if (!ok || !key) return;
+    key = null;
+    clearTimeout(idleT);
+    window.D = clone(DEF);
+    var v = document.getElementById("v"), n = document.getElementById("nav");
+    if (v) v.innerHTML = "";
+    if (n) n.innerHTML = "";
+    unlockFlow();
+  }
+  function arm() { clearTimeout(idleT); if (ok && key) idleT = setTimeout(lock, IDLE); }
+  function bindIdle() {
+    if (bound) return; bound = true;
+    ["click", "keydown", "touchstart", "mousemove", "scroll"].forEach(function (ev) { window.addEventListener(ev, arm, { passive: true }); });
+  }
+
+  /* ---------- parolni almashtirish ---------- */
+  function rekey(pw) {
+    return queue.then(function () {
+      var salt = crypto.getRandomValues(new Uint8Array(16));
+      return derive(pw, salt, ITER).then(function (k) {
+        return seal(k, "shf-ok").then(function (c) {
+          return seal(k, JSON.stringify(window.D)).then(function (s) {
+            lsSet(K_META, JSON.stringify({ s: b64(salt), i: ITER, c: c }));
+            lsSet(K_DATA, s);
+            key = k;
+            return null;
+          });
+        });
+      });
+    });
+  }
+  function changePw() {
+    if (!ok || !key) return;
+    ask({
+      title: "Parolni almashtirish",
+      fields: [{ label: "Joriy parol", ac: "current-password" }, { label: "Yangi parol (kamida 8 belgi)", ac: "new-password" }, { label: "Yangi parolni takrorlang", ac: "new-password" }],
+      ok: "Almashtirish", cancel: true
+    }, function (v) {
+      if (v[1].length < 8) return Promise.resolve("Yangi parol kamida 8 belgidan iborat boʻlsin.");
+      if (v[1] !== v[2]) return Promise.resolve("Yangi parollar mos kelmadi.");
+      var meta = JSON.parse(lsGet(K_META));
+      return derive(v[0], ub64(meta.s), meta.i).then(function (k) { return unseal(k, meta.c); })
+        .then(function (x) { if (x !== "shf-ok") throw 1; return true; })
+        .then(function () { return rekey(v[1]); }, function () { return "Joriy parol notoʻgʻri."; });
+    }).then(function (r) { if (r) window.R(); });
+  }
+
+  /* ---------- hammasini o'chirish ---------- */
+  function wipe(silent) {
+    if (!silent && !confirm("Barcha ma’lumotlar va parol butunlay oʻchiriladi. Qaytarib boʻlmaydi. Davom etasizmi?")) return;
+    [K_META, K_DATA, K_OLD, K_TRY].forEach(lsDel);
+    location.reload();
+  }
+
+  /* ---------- eksport / import ---------- */
+  function download(text) {
+    var a = document.createElement("a"), u = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    a.href = u; a.download = "salomatlik-" + today() + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 1000);
+  }
+  function exportData() {
+    if (ok && !key) return;
+    if (!ok) { download(JSON.stringify(window.D)); return; }
+    ask({
+      title: "Eksport",
+      desc: "Fayl parol bilan shifrlanadi. Maydonni boʻsh qoldirsangiz, fayl shifrlanmaydi va uni hamma oʻqiy oladi.",
+      fields: [{ label: "Eksport paroli (ixtiyoriy)", ac: "new-password", opt: true }],
+      ok: "Yuklab olish", cancel: true
+    }, function (v) {
+      var plain = JSON.stringify(window.D);
+      if (!v[0]) { download(plain); return Promise.resolve(null); }
+      if (v[0].length < 8) return Promise.resolve("Parol kamida 8 belgidan iborat boʻlsin.");
+      var salt = crypto.getRandomValues(new Uint8Array(16));
+      return derive(v[0], salt, ITER).then(function (k) { return seal(k, plain); }).then(function (c) {
+        download(JSON.stringify({ v: 1, enc: true, s: b64(salt), i: ITER, d: c }));
+        return null;
+      });
+    });
+  }
+  function importData(input) {
+    var f = input.files && input.files[0];
+    input.value = "";
+    if (!f || (ok && !key)) return;
+    if (f.size > 5 * 1024 * 1024) { alert("Fayl juda katta (5 MB dan oshmasin)."); return; }
+    var r = new FileReader();
+    r.onload = function () {
+      var j;
+      try { j = JSON.parse(r.result); } catch (e) { alert("Fayl notoʻgʻri"); return; }
+      if (j && j.enc === true && ok && typeof j.s === "string" && typeof j.d === "string") {
+        var it = (+j.i >= 1000 && +j.i <= 2000000) ? +j.i : ITER;
+        ask({ title: "Shifrlangan fayl", desc: "Eksport paytida kiritilgan parolni kiriting.", fields: [{ label: "Fayl paroli", ac: "off" }], ok: "Import qilish", cancel: true }, function (v) {
+          return derive(v[0], ub64(j.s), it).then(function (k) { return unseal(k, j.d); })
+            .then(function (t) { mergeData(JSON.parse(t)); return null; }, function () { return "Parol notoʻgʻri yoki fayl buzilgan."; });
+        });
+      } else if (j && j.enc === true) {
+        alert("Shifrlangan faylni ochish uchun HTTPS (yoki localhost) kerak.");
+      } else mergeData(j);
+    };
+    r.readAsText(f);
+  }
+
+  /* ---------- "Xavfsizlik" bo'limi ---------- */
+  function secHTML() {
+    var st = ok
+      ? '<div class="tip">✅ Himoya faol: ma’lumotlar AES-256-GCM bilan shifrlangan.</div>'
+      : '<div class="tip" style="background:#fdecea;color:#7a1f23">⚠️ Shifrlash ishlamayapti: brauzer Web Crypto API ni faqat HTTPS (yoki localhost) sahifalarda beradi. Ma’lumotlar shifrlanmay saqlanmoqda.</div>';
+    var dis = ok ? "" : " disabled";
+    return '<div class="card"><b>🛡️ Xavfsizlik</b>' + st +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="p"' + dis + ' onclick="SEC.lock()">Hozir qulflash</button><button' + dis + ' onclick="SEC.changePw()">Parolni almashtirish</button><button class="x" style="border:1px solid var(--wa)" onclick="SEC.wipe()">Barcha ma’lumotni oʻchirish</button></div></div>' +
+      '<div class="card"><b>Qanday himoya qilingan?</b>' +
+      '<div class="tip"><b>Parol va kalit.</b> Parol saqlanmaydi. Undan PBKDF2-SHA256 (' + ITER.toLocaleString("en-US") + ' iteratsiya) va tasodifiy tuz (salt) bilan 256-bitli kalit hosil qilinadi.</div>' +
+      '<div class="tip"><b>Shifrlash.</b> Ma’lumotlar AES-256-GCM bilan shifrlanadi. GCM butunlikni ham tekshiradi: fayl oʻzgartirilsa, ochilmaydi.</div>' +
+      '<div class="tip"><b>Brute-force himoyasi.</b> ' + MAXTRY + ' marta xato kiritilsa, kirish bloklanadi va har keyingi xatoda blok uzayadi.</div>' +
+      '<div class="tip"><b>Avtomatik qulflash.</b> ' + (IDLE / 60000) + ' daqiqa harakatsiz qolsa, tizim qulflanadi va ma’lumotlar sahifa xotirasidan oʻchiriladi.</div>' +
+      '<div class="tip"><b>Eksport.</b> Fayl parol bilan shifrlanishi mumkin. Import paytida fayl tekshiriladi (turlar, sana, uzunlik), shuning uchun zararli fayl orqali kod kiritib boʻlmaydi (XSS).</div>' +
+      '<div class="tip"><b>Maxfiylik.</b> Ma’lumotlar faqat shu brauzerda saqlanadi, hech qaysi serverga yuborilmaydi.</div>' +
+      '<p class="mu">Eslatma: parolni unutsangiz, ma’lumotlarni tiklab boʻlmaydi. Urinishlarni cheklash brauzer ichida ishlaydi, haqiqiy himoya esa kuchli parol va shifrlashdan keladi.</p></div>';
+  }
+
+  /* ---------- uslub ---------- */
+  function addCss() {
+    var s = document.createElement("style");
+    s.textContent =
+      ".sec-ov{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}" +
+      ".sec-ov.m{background:rgba(0,0,0,.5)}" +
+      ".sec-box{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:14px;padding:20px;width:100%;max-width:380px}" +
+      ".sec-box h2{margin:0 0 6px;font-size:18px}.sec-box form{display:block}.sec-box label{margin-top:10px}" +
+      ".sec-d{color:var(--mu);font-size:13px;margin:0 0 6px}.sec-m{color:var(--wa);font-size:13px;min-height:20px;margin-top:8px}" +
+      ".sec-b{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.sec-b button:disabled,#v button:disabled{opacity:.5;cursor:not-allowed}";
+    document.head.appendChild(s);
+  }
+
+  /* ---------- ishga tushirish ---------- */
+  window.SEC = { lock: lock, changePw: changePw, wipe: wipe };
+  window.sv = save;
+  window.ex = exportData;
+  window.imp = importData;
+
+  if (window.T && !window.T.some(function (t) { return t[0] === "s"; })) window.T.push(["s", "Xavfsizlik"]);
+  var R0 = window.R;
+  window.R = function () {
+    if (ok && !key) return;
+    if (window.tab === "s") { document.getElementById("v").innerHTML = secHTML(); return; }
+    return R0.apply(this, arguments);
+  };
+
+  addCss();
+  window.D = clone(DEF); /* asosiy skript yuklagan ochiq ma'lumotni xotiradan tozalaymiz */
+  var v0 = document.getElementById("v");
+  if (v0) v0.innerHTML = "";
+
+  if (!ok) {
+    var old = lsGet(K_OLD);
+    try { if (old) applyData(JSON.parse(old)); } catch (e) {}
+    window.nav();
+    window.R();
+  } else if (lsGet(K_META)) unlockFlow();
+  else setupFlow();
+})();
 </script>
 </body>
 </html>
