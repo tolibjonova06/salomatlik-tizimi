@@ -5,7 +5,7 @@
 Foydalanuvchi o'z salomatligi, mashqlari, ovqatlanishi va bo'sh vaqtini bir joyda kuzatib boradigan veb-ilova. Barcha ma'lumotlar faqat foydalanuvchining brauzerida, shifrlangan holda saqlanadi.
 
 ## Havolalar
-- Ilova: HAVOLA_SHU_YERGA
+- Ilova: https://salomatlik-tizimi.web.app
 - Dataset: Kaggle, World Happiness Report (2015-2019)
 
 ## Imkoniyatlar

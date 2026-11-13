@@ -22,7 +22,7 @@ h1{font-size:19px;line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em
 .brand small{display:block;color:var(--mu);font-size:12px;margin-top:2px}
 .tools{display:flex;gap:8px;flex:none}
 .ib{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;font-size:13px;font-weight:600}
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;max-width:900px;margin:auto;display:flex;gap:8px;overflow-x:auto;padding:8px 16px 12px;scrollbar-width:none;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;max-width:900px;margin:auto;display:flex;flex-wrap:wrap;gap:8px;padding:8px 16px 12px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 nav::-webkit-scrollbar{display:none}
 nav button{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;box-shadow:var(--sh)}
 nav button .ic{font-size:16px;line-height:1}
@@ -71,7 +71,7 @@ svg text{fill:var(--mu);font-size:10px}
 .ring .v small{display:block;margin-top:3px;font-size:11px;opacity:.85}
 @keyframes ringin{from{stroke-dashoffset:289}}
 @media (max-width:720px){
- nav{position:fixed;top:auto;bottom:0;left:0;right:0;max-width:none;margin:0;gap:4px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--bd);box-shadow:0 -8px 24px -12px rgba(10,77,58,.28);backdrop-filter:none;-webkit-backdrop-filter:none}
+ nav{position:fixed;top:auto;bottom:0;left:0;right:0;max-width:none;margin:0;gap:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--bd);box-shadow:0 -8px 24px -12px rgba(10,77,58,.28);backdrop-filter:none;-webkit-backdrop-filter:none}
  nav button{flex-direction:column;gap:2px;min-width:68px;padding:7px 10px;border:0;border-radius:14px;background:transparent;box-shadow:none;font-size:11px;font-weight:500}
  nav button .ic{font-size:20px}
  nav button.on{background:var(--ac2);color:var(--ac);font-weight:700}
