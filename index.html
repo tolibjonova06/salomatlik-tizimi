@@ -89,7 +89,7 @@ svg text{fill:var(--mu);font-size:10px}
 <main id="v"></main>
 <script>
 var T=[["d","Bosh sahifa"],["h","Salomatlik"],["w","Mashqlar"],["f","Ovqat"],["l","Boʻsh vaqt"],["g","Maqsadlar"],["a","Farovonlik testi"],["k","Dataset tahlili"]];
-var D={h:[],w:[],l:[],f:[],g:{steps:8000,sleep:8,water:2,workouts:3,leisure:3,kcal:2000}};
+var D={h:[],w:[],l:[],f:[],tm:null,g:{steps:8000,sleep:8,water:2,workouts:3,leisure:3,kcal:2000}};
 try{var s=localStorage.getItem("shf");if(s)D=Object.assign(D,JSON.parse(s))}catch(e){}
 var tab="d";
 function sv(){try{localStorage.setItem("shf",JSON.stringify(D))}catch(e){}}
@@ -164,6 +164,38 @@ function foodHTML(){
  '<div class="card"><b>Tez qoʻshish</b> <span class="mu">(taxminiy qiymatlar)</span><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+FOODS.map(function(p,i){return '<button onclick="quickFood('+i+')">'+esc(p[0])+' · '+p[1]+'</button>'}).join("")+'</div></div>'+
  '<div class="card"><form onsubmit="add(\'f\',event)"><div><label>Sana</label><input type="date" name="date" value="'+t+'"></div><div><label>Vaqti</label><select name="meal">'+MEALS.map(function(m){return '<option>'+m+'</option>'}).join("")+'</select></div><div><label>Taom</label><input name="name" maxlength="60" placeholder="Masalan: palov" required></div><div><label>Kaloriya (kkal)</label><input type="number" name="kcal" min="0" max="5000" required></div><button class="p">Qoʻshish</button></form></div>'+
  '<div class="card">'+tbl("f",[["date","Sana"],["meal","Vaqti"],["name","Taom"],["kcal","kkal"]])+'</div>'+bars("Kaloriya (kkal)","f","kcal",goal,"kkal")}
+var TITLE=document.title;
+function tmMs(){var t=D.tm;if(!t)return 0;return (+t.acc||0)+(t.run?Date.now()-t.start:0)}
+function tmFmt(ms){var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60,p=function(n){return (n<10?"0":"")+n};return (h?h+":"+p(m):p(m))+":"+p(c)}
+function tmTick(){var t=D&&D.tm,s=t?tmFmt(tmMs()):"",a=$("tmv"),b=$("tmb");if(a)a.textContent=s;if(b)b.textContent=s;document.title=(t&&t.run)?"⏱ "+s+" · Salomatlik tizimi":TITLE}
+function tmStart(k){
+ var o={k:k,acc:0,start:Date.now(),run:true,type:"",lvl:"",name:"",cat:""};
+ if(k==="w"){o.type=$("tmt").value;o.lvl=$("tml").value}
+ else{o.name=$("tmn").value.trim().slice(0,60);if(!o.name){$("tmn").focus();return}o.cat=$("tmc").value}
+ D.tm=o;sv();R();tmTick()}
+function tmPause(){var t=D.tm;if(!t||!t.run)return;t.acc+=Date.now()-t.start;t.start=0;t.run=false;sv();R();tmTick()}
+function tmResume(){var t=D.tm;if(!t||t.run)return;t.start=Date.now();t.run=true;sv();R();tmTick()}
+function tmCancel(){if(!confirm("Sekundomer bekor qilinsinmi? Vaqt saqlanmaydi."))return;D.tm=null;sv();R();tmTick()}
+function tmStop(){
+ var t=D.tm;if(!t)return;var ms=tmMs();
+ if(ms<20000&&!confirm("Sekundomer 20 soniyadan kam ishladi. Baribir 1 daqiqa deb saqlansinmi?"))return;
+ if(ms>6*3600e3&&!confirm("Sekundomer 6 soatdan ortiq ishladi. Baribir saqlansinmi?"))return;
+ var mn=Math.max(1,Math.round(ms/60000));
+ if(t.k==="w")D.w.push({id:uid(),date:td(),type:t.type,min:String(mn),lvl:t.lvl});
+ else D.l.push({id:uid(),date:td(),name:t.name,cat:t.cat,min:String(mn)});
+ D.tm=null;sv();R();tmTick()}
+function timerCard(k){
+ var t=D.tm,ttl=k==="w"?"Mashq sekundomeri":"Mashgʻulot sekundomeri";
+ if(!t){
+  var fm=k==="w"
+   ?'<div><label>Mashq turi</label><select id="tmt">'+Object.keys(MET).map(function(n){return '<option>'+n+'</option>'}).join("")+'</select></div><div><label>Intensivlik</label><select id="tml"><option>Past</option><option selected>Oʻrta</option><option>Yuqori</option></select></div>'
+   :'<div><label>Mashgʻulot</label><input id="tmn" maxlength="60" placeholder="Kitob oʻqish, sayr..."></div><div><label>Turkum</label><select id="tmc"><option>Ijod</option><option>Oʻqish</option><option>Tabiat</option><option>Ijtimoiy</option><option>Oʻyin</option><option>Dam olish</option></select></div>';
+  return '<div class="card"><b>⏱ '+ttl+'</b><form onsubmit="event.preventDefault();tmStart(\''+k+'\')">'+fm+'<button class="p">▶ Boshlash</button></form></div>'}
+ if(t.k!==k)return '<div class="card"><b>⏱ Sekundomer</b><p class="mu">Sekundomer hozir "'+(t.k==="w"?"Mashqlar":"Boʻsh vaqt")+'" boʻlimida ishlayapti.</p><button onclick="tab=\''+t.k+'\';nav();R()">Koʻrish</button></div>';
+ var lb=k==="w"?t.type+" · "+t.lvl:t.name+" · "+t.cat;
+ return '<div class="card"><b>⏱ '+ttl+'</b><div class="mu">'+(t.run?"Davom etmoqda":"Pauzada")+' · '+esc(lb)+'</div><div id="tmv" role="timer" style="font-size:44px;font-weight:700;letter-spacing:.02em;margin:6px 0 12px">'+tmFmt(tmMs())+'</div><div style="display:flex;gap:8px;flex-wrap:wrap">'+(t.run?'<button onclick="tmPause()">⏸ Pauza</button>':'<button onclick="tmResume()">▶ Davom ettirish</button>')+'<button class="p" onclick="tmStop()">⏹ Toʻxtatish va saqlash</button><button class="x" onclick="tmCancel()">Bekor qilish</button></div></div>'}
+function timerBanner(){var t=D.tm;if(!t)return "";var lb=t.k==="w"?t.type:t.name;return '<div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><span class="mu">'+(t.run?"⏱ Davom etmoqda":"⏸ Pauzada")+' · '+esc(lb)+'</span><div id="tmb" style="font-size:26px;font-weight:700">'+tmFmt(tmMs())+'</div></div><button class="p" onclick="tab=\''+t.k+'\';nav();R()">Ochish</button></div>'}
+setInterval(tmTick,1000);
 function heroCard(sc){
  var d=new Date(),hr=d.getHours(),C=289,
  gr=hr<5?"Xayrli tun":hr<12?"Xayrli tong":hr<18?"Xayrli kun":"Xayrli kech",
@@ -177,14 +209,14 @@ function R(){
  var m=$("v"),h=week(D.h),b=bmi(),html="";
  if(tab==="d"){
   var sc=score();
-  html=heroCard(sc)+
+  html=timerBanner()+heroCard(sc)+
   '<div class="grid"><div class="stat"><i class="si">🚶</i><b>'+f(avg(h,"steps"))+'</b><span>oʻrtacha qadam</span></div><div class="stat"><i class="si">😴</i><b>'+f(avg(h,"sleep"),1)+' soat</b><span>oʻrtacha uyqu</span></div><div class="stat"><i class="si">💧</i><b>'+f(avg(h,"water"),1)+' l</b><span>oʻrtacha suv</span></div><div class="stat"><i class="si">🏋️</i><b>'+week(D.w).length+'</b><span>mashq (7 kun)</span></div><div class="stat"><i class="si">🎨</i><b>'+week(D.l).length+'</b><span>boʻsh vaqt (7 kun)</span></div><div class="stat"><i class="si">⚖️</i><b>'+(b?f(b.v,1):"—")+'</b><span>BMI '+(b?"· "+b.t:"")+'</span></div>'+extraStats()+'</div>'+
   '<div class="card" style="margin-top:14px"><b>Tavsiyalar</b>'+tips().map(function(t){return '<div class="tip">'+t+"</div>"}).join("")+'</div>'+
   '<div class="card"><b>Vazn dinamikasi (kg)</b>'+chart(D.h,"weight")+'</div>'+quickCard()+badges()+weekCards()+
   '<p class="mu">Ma’lumotlar faqat sizning brauzeringizda saqlanadi. Tizim tibbiy tashxis qoʻymaydi.</p>'}
  if(tab==="h")html='<div class="card"><form onsubmit="add(\'h\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Vazn (kg)</label><input type="number" step="0.1" name="weight"></div><div><label>Boʻy (sm)</label><input type="number" name="height"></div><div><label>Qadamlar</label><input type="number" name="steps"></div><div><label>Uyqu (soat)</label><input type="number" step="0.5" name="sleep"></div><div><label>Suv (litr)</label><input type="number" step="0.1" name="water"></div><div><label>Puls</label><input type="number" name="pulse"></div><div><label>Kayfiyat</label><select name="mood"><option value="">—</option><option value="1">1 😞</option><option value="2">2 😕</option><option value="3">3 😐</option><option value="4">4 🙂</option><option value="5">5 😄</option></select></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("h",[["date","Sana"],["weight","Vazn"],["steps","Qadam"],["sleep","Uyqu"],["water","Suv"],["pulse","Puls"],["mood","Kayfiyat"]])+"</div>";
- if(tab==="w")html='<div class="card"><form onsubmit="add(\'w\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Turi</label><select name="type"><option>Yugurish</option><option>Yurish</option><option>Kuch mashqi</option><option>Velosiped</option><option>Suzish</option><option>Yoga</option><option>Futbol</option><option>Boshqa</option></select></div><div><label>Davomiyligi (daq)</label><input type="number" name="min" required></div><div><label>Intensivlik</label><select name="lvl"><option>Past</option><option selected>Oʻrta</option><option>Yuqori</option></select></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("w",[["date","Sana"],["type","Tur"],["min","Daq."],["lvl","Intensivlik"]])+'</div><p class="mu">Jami: '+sum(D.w,"min")+" daqiqa mashq. Oxirgi 7 kunda taxminan "+f(burn(week(D.w)))+" kkal yoqilgan (MET asosida, taxminiy).</p>";
- if(tab==="l")html='<div class="card"><form onsubmit="add(\'l\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Mashgʻulot</label><input name="name" placeholder="Kitob oʻqish, sayr..." required></div><div><label>Turkum</label><select name="cat"><option>Ijod</option><option>Oʻqish</option><option>Tabiat</option><option>Ijtimoiy</option><option>Oʻyin</option><option>Dam olish</option></select></div><div><label>Daqiqa</label><input type="number" name="min"></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("l",[["date","Sana"],["name","Mashgʻulot"],["cat","Turkum"],["min","Daq."]])+"</div>";
+ if(tab==="w")html=timerCard("w")+'<div class="card"><form onsubmit="add(\'w\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Turi</label><select name="type"><option>Yugurish</option><option>Yurish</option><option>Kuch mashqi</option><option>Velosiped</option><option>Suzish</option><option>Yoga</option><option>Futbol</option><option>Boshqa</option></select></div><div><label>Davomiyligi (daq)</label><input type="number" name="min" required></div><div><label>Intensivlik</label><select name="lvl"><option>Past</option><option selected>Oʻrta</option><option>Yuqori</option></select></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("w",[["date","Sana"],["type","Tur"],["min","Daq."],["lvl","Intensivlik"]])+'</div><p class="mu">Jami: '+sum(D.w,"min")+" daqiqa mashq. Oxirgi 7 kunda taxminan "+f(burn(week(D.w)))+" kkal yoqilgan (MET asosida, taxminiy).</p>";
+ if(tab==="l")html=timerCard("l")+'<div class="card"><form onsubmit="add(\'l\',event)"><div><label>Sana</label><input type="date" name="date" value="'+td()+'"></div><div><label>Mashgʻulot</label><input name="name" placeholder="Kitob oʻqish, sayr..." required></div><div><label>Turkum</label><select name="cat"><option>Ijod</option><option>Oʻqish</option><option>Tabiat</option><option>Ijtimoiy</option><option>Oʻyin</option><option>Dam olish</option></select></div><div><label>Daqiqa</label><input type="number" name="min"></div><button class="p">Qoʻshish</button></form></div><div class="card">'+tbl("l",[["date","Sana"],["name","Mashgʻulot"],["cat","Turkum"],["min","Daq."]])+"</div>";
  if(tab==="g"){var g=D.g;html='<div class="card"><b>Haftalik/kunlik maqsadlar</b><form onsubmit="event.preventDefault();var d=new FormData(event.target);d.forEach(function(v,k){D.g[k]=+v});sv();R()"><div><label>Qadam (kun)</label><input type="number" name="steps" value="'+g.steps+'"></div><div><label>Uyqu (soat)</label><input type="number" step="0.5" name="sleep" value="'+g.sleep+'"></div><div><label>Suv (litr)</label><input type="number" step="0.1" name="water" value="'+g.water+'"></div><div><label>Mashq (hafta)</label><input type="number" name="workouts" value="'+g.workouts+'"></div><div><label>Boʻsh vaqt (hafta)</label><input type="number" name="leisure" value="'+g.leisure+'"></div><div><label>Kaloriya (kun)</label><input type="number" name="kcal" value="'+(g.kcal||2000)+'"></div><button class="p">Saqlash</button></form></div>'}
  if(tab==="a")html='<div class="card"><b>Farovonlik testi</b><p class="mu">Jahon baxt hisoboti (World Happiness Report) omillariga asoslangan: ijtimoiy qoʻllab-quvvatlash, erkinlik, saxovat, hayotdan mamnunlik, sogʻliq. Har birini 1–10 baholang.</p><div id="q"></div><button class="p" onclick="wb()">Natijani koʻrish</button><div id="r"></div></div>',m.innerHTML=html,wq();
  if(tab==="f")html=foodHTML();if(tab==="k")html=whHTML();m.innerHTML=html;if(tab==="a")wq();if(tab==="k")whInit()}
@@ -228,7 +260,7 @@ nav();R();
 
   var K_META = "shf_sec", K_DATA = "shf_enc", K_OLD = "shf", K_TRY = "shf_try";
   var ITER = 250000, IDLE = 5 * 60 * 1000, MAXTRY = 5;
-  var DEF = { h: [], w: [], l: [], f: [], g: { steps: 8000, sleep: 8, water: 2, workouts: 3, leisure: 3, kcal: 2000 } };
+  var DEF = { h: [], w: [], l: [], f: [], tm: null, g: { steps: 8000, sleep: 8, water: 2, workouts: 3, leisure: 3, kcal: 2000 } };
   var ok = !!(window.crypto && window.crypto.subtle);
   var te = new TextEncoder(), tdc = new TextDecoder();
   var key = null, idleT = null, queue = Promise.resolve(), ov = null, bound = false;
@@ -298,12 +330,20 @@ nav();R();
         if (isFinite(v) && v >= 0 && v <= 100000) out.g[n] = v;
       });
     }
+    var t = o.tm;
+    if (t && typeof t === "object" && (t.k === "w" || t.k === "l")) {
+      var tt = { k: t.k, run: t.run === true, acc: Math.min(Math.max(+t.acc || 0, 0), 7 * 24 * 3600e3), start: Math.max(+t.start || 0, 0) };
+      ["type", "lvl", "name", "cat"].forEach(function (n) { tt[n] = typeof t[n] === "string" ? t[n].slice(0, 60) : ""; });
+      if (tt.run && !tt.start) tt.run = false;
+      out.tm = tt;
+    }
     return out;
   }
   function applyData(obj) {
     var s = sanitize(obj), d = clone(DEF);
     ["h", "w", "l", "f"].forEach(function (k) { if (s[k]) d[k] = s[k]; });
     if (s.g) Object.assign(d.g, s.g);
+    if (s.tm) d.tm = s.tm; /* sekundomer holati faqat saqlangan ma'lumotdan tiklanadi, importdan emas */
     window.D = d;
   }
   function mergeData(obj) {
